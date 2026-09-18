@@ -27,7 +27,12 @@
 
   --font-sans: "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui,
                -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: Consolas, "Courier New", monospace;
+  --font-mono: Consolas, "Courier New", "PingFang SC", "Microsoft YaHei", monospace;
+}
+
+html[lang="en"] {
+  --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial,
+               "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 /* ---------------------------------------------------------------- reset -- */
