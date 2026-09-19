@@ -412,6 +412,7 @@ a {
 .cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: 22px;
 }
 /* 1px "border" follows the clipped outline: dark frame + inset panel */
@@ -431,7 +432,6 @@ a {
 
 .card {
   height: 100%;
-  min-height: 208px;
   display: flex;
   flex-direction: column;
   padding: 26px 24px 24px;
@@ -486,8 +486,8 @@ a {
 .card-link:hover { color: var(--accent); }
 
 .arrow {
-  display: inline-block;       /* transform needs a block-ish box */
-  transition: transform 0.16s ease-out;
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .card-link:hover .arrow { transform: translateX(2px); }
 
@@ -516,47 +516,73 @@ a {
 .archive li + li { border-top: 1px solid var(--line); }
 
 .archive-row {
-  --doc-id-w: 52px;            /* also drives the mobile indent below */
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 3px 16px;
+  --doc-id-w: 52px;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: var(--doc-id-w) minmax(0, 1fr) 96px 64px auto;
+  align-items: center;
+  column-gap: 16px;
   padding: 13px 0;
-  transition: background 0.12s linear, color 0.12s linear;
 }
-/* whole row is one <a>, so the entire strip inverts on hover */
-.archive-row:hover {
-  background: var(--ink);
-  color: #fff;
+/* hover 链接时整行黄块从左滑入，与 contact 滑块同一套语言 */
+.archive-row::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: translateX(-101%);
+  transition: transform 0.16s ease-out;
 }
+.archive-row:has(.archive-link:hover)::before { transform: translateX(0); }
+.archive-row > * { position: relative; z-index: 1; }
 
 .doc-id {
-  flex: none;
-  width: var(--doc-id-w);
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
   color: var(--gray);
 }
-/* absorbs the slack, which is what pushes the meta + link to the row end */
-.doc-title {
-  flex: 1 1 auto;
-  min-width: 0;
-}
+.doc-title { min-width: 0; }
 .doc-cat,
-.doc-date,
-.archive-link {
-  flex: none;
+.doc-date {
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
   color: var(--gray);
+  white-space: nowrap;
 }
-.archive-row:hover .doc-id,
-.archive-row:hover .doc-cat,
-.archive-row:hover .doc-date { color: #CFCFCF; }
-.archive-row:hover .archive-link { color: var(--accent); }
-.archive-row:hover .arrow { transform: translateX(2px); }
+/* 黄底上灰字会看不清，hover 时统一切为 ink */
+.archive-row:has(.archive-link:hover) .doc-id,
+.archive-row:has(.archive-link:hover) .doc-cat,
+.archive-row:has(.archive-link:hover) .doc-date { color: var(--ink); }
+
+/* 链接胶囊：与 contact-list a 同构 */
+.archive-link {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: end;
+  padding: 6px 12px;
+  border: 1px solid var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.archive-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: translateX(-101%);
+  transition: transform 0.16s ease-out;
+}
+.archive-link:hover::before { transform: translateX(0); }
+.archive-link > * { position: relative; z-index: 1; }
+.archive-link:hover .arrow { transform: translateX(3px); }
 
 /* reserved for future one-line annotations — NOT used in the current markup */
 .doc-note,
@@ -648,14 +674,20 @@ a {
   .nav-link { display: none; }
 
   .cards { grid-template-columns: minmax(0, 1fr); }
-  .card { min-height: 0; }
 
-  /* archive rows wrap: id + title own the first line, the meta and the link
-     hang below, indented to the title's left edge — no horizontal scroll */
-  .archive-row { gap: 4px 12px; }
-  .doc-cat,
-  .doc-date,
-  .archive-link { margin-left: calc(var(--doc-id-w) + 12px); }
+  .archive-row {
+    grid-template-columns: var(--doc-id-w) minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "id title title title"
+      ".  cat   date  link";
+    row-gap: 4px;
+    column-gap: 12px;
+  }
+  .doc-id       { grid-area: id; }
+  .doc-title    { grid-area: title; }
+  .doc-cat      { grid-area: cat; }
+  .doc-date     { grid-area: date; }
+  .archive-link { grid-area: link; justify-self: end; }
 
   .footer-inner { padding: 44px var(--pad) 32px; }
   .contact-list { gap: 10px; margin-bottom: 30px; }
