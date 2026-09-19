@@ -470,14 +470,104 @@ a {
 }
 .card-frame:hover .card-desc { color: #CFCFCF; }
 
-/* thin accent rule closing off the card body — stands in for the removed detail link */
-.card::after {
-  content: "";
+/* the card itself is NOT a link — this exit line is the only clickable thing
+   in it, so the whole panel never becomes a giant ambiguous hit area */
+.card-link {
+  margin-top: auto;            /* pins the link to the card's bottom edge */
   align-self: flex-start;
-  width: 40px;
-  height: 2px;
-  margin-top: auto;   /* anchors to the card's bottom edge when the grid stretches it */
-  background: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--gray);
+  transition: color 0.12s linear;
+}
+/* on the inverted (black) panel the gray would sink — go accent instead */
+.card-frame:hover .card-link,
+.card-link:hover { color: var(--accent); }
+
+.arrow {
+  display: inline-block;       /* transform needs a block-ish box */
+  transition: transform 0.16s ease-out;
+}
+.card-link:hover .arrow { transform: translateX(2px); }
+
+/* PRJ-03 is a single wide panel: spans both columns, collapses naturally
+   to one column once .cards itself drops to a single track */
+.card-wide { grid-column: 1 / -1; }
+
+/* WIP marker — dashed outline, same convention as the "learning" tags */
+.wip-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px dashed var(--gray);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  vertical-align: 1px;
+}
+
+/* ------------------------------------------------------------- archive -- */
+.archive {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* hairline dividers BETWEEN rows only — the section's own bottom border
+   already closes off the last one, so no doubled rule */
+.archive li + li { border-top: 1px solid var(--line); }
+
+.archive-row {
+  --doc-id-w: 52px;            /* also drives the mobile indent below */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 16px;
+  padding: 13px 0;
+  transition: background 0.12s linear, color 0.12s linear;
+}
+/* whole row is one <a>, so the entire strip inverts on hover */
+.archive-row:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+.doc-id {
+  flex: none;
+  width: var(--doc-id-w);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--gray);
+}
+/* absorbs the slack, which is what pushes the meta + link to the row end */
+.doc-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.doc-cat,
+.doc-date,
+.archive-link {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--gray);
+}
+.archive-row:hover .doc-id,
+.archive-row:hover .doc-cat,
+.archive-row:hover .doc-date { color: #CFCFCF; }
+.archive-row:hover .archive-link { color: var(--accent); }
+.archive-row:hover .arrow { transform: translateX(2px); }
+
+/* reserved for future one-line annotations — NOT used in the current markup */
+.doc-note,
+.card-note {
+  margin: 0 0 12px;
+  padding-left: 1.6em;
+  text-indent: -1.6em;         /* hanging indent: wrapped lines clear the marker */
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--gray);
 }
 
 /* -------------------------------------------------------------- contact -- */
@@ -559,6 +649,13 @@ a {
 
   .cards { grid-template-columns: minmax(0, 1fr); }
   .card { min-height: 0; }
+
+  /* archive rows wrap: id + title own the first line, the meta and the link
+     hang below, indented to the title's left edge — no horizontal scroll */
+  .archive-row { gap: 4px 12px; }
+  .doc-cat,
+  .doc-date,
+  .archive-link { margin-left: calc(var(--doc-id-w) + 12px); }
 
   .footer-inner { padding: 44px var(--pad) 32px; }
   .contact-list { gap: 10px; margin-bottom: 30px; }
