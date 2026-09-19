@@ -35,6 +35,13 @@ html[lang="en"] {
                "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
+/* site wordmark: the name is a logo — always rendered with the CJK stack,
+   so both language pages draw it identically */
+.nav-brand,
+.hero-name {
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
 /* ---------------------------------------------------------------- reset -- */
 *,
 *::before,
