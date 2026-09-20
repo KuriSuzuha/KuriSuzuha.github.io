@@ -428,7 +428,6 @@ a {
   );
   transition: background 0.12s linear;
 }
-.card-frame:hover { background: var(--accent); }
 
 .card {
   height: 100%;
@@ -444,10 +443,6 @@ a {
     0 100%
   );
   transition: background 0.12s linear, color 0.12s linear;
-}
-.card-frame:hover .card {
-  background: var(--ink);
-  color: #fff;
 }
 
 .card-idx {
@@ -468,7 +463,6 @@ a {
   font-size: 15px;
   line-height: 1.7;
 }
-.card-frame:hover .card-desc { color: #CFCFCF; }
 
 /* the card itself is NOT a link — this exit line is the only clickable thing
    in it, so the whole panel never becomes a giant ambiguous hit area */
@@ -481,15 +475,30 @@ a {
   color: var(--gray);
   transition: color 0.12s linear;
 }
-/* on the inverted (black) panel the gray would sink — go accent instead */
-.card-frame:hover .card-link,
-.card-link:hover { color: var(--accent); }
 
 .arrow {
+  position: relative;
   display: inline-block;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  line-height: 1;
 }
-.card-link:hover .arrow { transform: translateX(2px); }
+/* first glyph — the resting one, which exits on hover */
+.arrow::before {
+  content: "→";
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.18s ease-out;
+}
+/* second glyph waits off-left, slides in as the first exits */
+.arrow::after {
+  content: "→";
+  position: absolute;
+  left: 0;
+  top: 0;
+  line-height: 1;
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.18s ease-out;
+}
 
 /* PRJ-03 is a single wide panel: spans both columns, collapses naturally
    to one column once .cards itself drops to a single track */
@@ -517,25 +526,23 @@ a {
 
 .archive-row {
   --doc-id-w: 52px;
-  position: relative;
-  overflow: hidden;
   display: grid;
   grid-template-columns: var(--doc-id-w) minmax(0, 1fr) 96px 64px auto;
   align-items: center;
   column-gap: 16px;
   padding: 13px 0;
+  transition: background 0.12s linear;
 }
-/* hover 链接时整行黄块从左滑入，与 contact 滑块同一套语言 */
-.archive-row::before {
-  content: "";
-  position: absolute;
-  inset: 0;
+/* press feedback: row inverts black on tap/press */
+.archive-row:active { background: var(--ink); color: #fff; }
+.archive-row:active .doc-id,
+.archive-row:active .doc-cat,
+.archive-row:active .doc-date { color: #CFCFCF; }
+.archive-row:active .archive-link {
   background: var(--accent);
-  transform: translateX(-101%);
-  transition: transform 0.16s ease-out;
+  border-color: var(--ink);
+  color: var(--ink);
 }
-.archive-row:has(.archive-link:hover)::before { transform: translateX(0); }
-.archive-row > * { position: relative; z-index: 1; }
 
 .doc-id {
   font-family: var(--font-mono);
@@ -552,10 +559,6 @@ a {
   color: var(--gray);
   white-space: nowrap;
 }
-/* 黄底上灰字会看不清，hover 时统一切为 ink */
-.archive-row:has(.archive-link:hover) .doc-id,
-.archive-row:has(.archive-link:hover) .doc-cat,
-.archive-row:has(.archive-link:hover) .doc-date { color: var(--ink); }
 
 /* 链接胶囊：与 contact-list a 同构 */
 .archive-link {
@@ -580,9 +583,26 @@ a {
   transform: translateX(-101%);
   transition: transform 0.16s ease-out;
 }
-.archive-link:hover::before { transform: translateX(0); }
 .archive-link > * { position: relative; z-index: 1; }
-.archive-link:hover .arrow { transform: translateX(3px); }
+
+/* hover effects only where a real pointer exists — on touch a tap leaves
+   :hover stuck on, so those rules are scoped to fine-pointer devices */
+@media (hover: hover) {
+  .card-frame:hover { background: var(--accent); }
+  .card-frame:hover .card { background: var(--ink); color: #fff; }
+  .card-frame:hover .card-desc { color: #CFCFCF; }
+  .card-frame:hover .card-link,
+  .card-link:hover { color: var(--accent); }
+  .archive-link:hover::before { transform: translateX(0); }
+  .card-link:hover .arrow::before,
+  .archive-link:hover .arrow::before { transform: translateX(5px); opacity: 0; }
+  .card-link:hover .arrow::after,
+  .archive-link:hover .arrow::after {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.06s;
+  }
+}
 
 /* reserved for future one-line annotations — NOT used in the current markup */
 .doc-note,
