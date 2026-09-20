@@ -476,30 +476,6 @@ a {
   transition: color 0.12s linear;
 }
 
-.arrow {
-  position: relative;
-  display: inline-block;
-  line-height: 1;
-}
-/* first glyph — the resting one, which exits on hover */
-.arrow::before {
-  content: "→";
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.18s ease-out;
-}
-/* second glyph waits off-left, slides in as the first exits */
-.arrow::after {
-  content: "→";
-  position: absolute;
-  left: 0;
-  top: 0;
-  line-height: 1;
-  opacity: 0;
-  transform: translateX(-5px);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.18s ease-out;
-}
-
 /* PRJ-03 is a single wide panel: spans both columns, collapses naturally
    to one column once .cards itself drops to a single track */
 .card-wide { grid-column: 1 / -1; }
@@ -531,7 +507,7 @@ a {
   align-items: center;
   column-gap: 16px;
   padding: 13px 0;
-  transition: background 0.12s linear;
+  transition: background 0.12s linear, color 0.12s linear;
 }
 /* press feedback: row inverts black on tap/press */
 .archive-row:active { background: var(--ink); color: #fff; }
@@ -574,6 +550,7 @@ a {
   font-size: 12px;
   letter-spacing: 0.08em;
   white-space: nowrap;
+  transition: color 0.12s linear;
 }
 .archive-link::before {
   content: "";
@@ -594,14 +571,12 @@ a {
   .card-frame:hover .card-link,
   .card-link:hover { color: var(--accent); }
   .archive-link:hover::before { transform: translateX(0); }
-  .card-link:hover .arrow::before,
-  .archive-link:hover .arrow::before { transform: translateX(5px); opacity: 0; }
-  .card-link:hover .arrow::after,
-  .archive-link:hover .arrow::after {
-    opacity: 1;
-    transform: translateX(0);
-    transition-delay: 0.06s;
-  }
+  .archive-row:hover { background: var(--ink); color: #fff; }
+  .archive-row:hover .doc-id,
+  .archive-row:hover .doc-cat,
+  .archive-row:hover .doc-date { color: #CFCFCF; }
+  .archive-row:hover .archive-link { color: var(--accent); }
+  .archive-row .archive-link:hover { color: var(--ink); }
 }
 
 /* reserved for future one-line annotations — NOT used in the current markup */
