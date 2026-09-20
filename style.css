@@ -509,16 +509,6 @@ a {
   padding: 13px 0;
   transition: background 0.12s linear, color 0.12s linear;
 }
-/* press feedback: row inverts black on tap/press */
-.archive-row:active { background: var(--ink); color: #fff; }
-.archive-row:active .doc-id,
-.archive-row:active .doc-cat,
-.archive-row:active .doc-date { color: #CFCFCF; }
-.archive-row:active .archive-link {
-  background: var(--accent);
-  border-color: var(--ink);
-  color: var(--ink);
-}
 
 .doc-id {
   font-family: var(--font-mono);
@@ -527,6 +517,11 @@ a {
   color: var(--gray);
 }
 .doc-title { min-width: 0; }
+/* English titles on the CN page: CJK fonts draw U+2019 full-width,
+   so hand them a Latin-first stack via :lang() */
+.doc-title:lang(en) {
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
 .doc-cat,
 .doc-date {
   font-family: var(--font-mono);
@@ -577,6 +572,17 @@ a {
   .archive-row:hover .doc-date { color: #CFCFCF; }
   .archive-row:hover .archive-link { color: var(--accent); }
   .archive-row .archive-link:hover { color: var(--ink); }
+}
+/* press state sits after the hover block: when both states match,
+   the later one must win the cascade for readability */
+.archive-row:active { background: var(--ink); color: #fff; }
+.archive-row:active .doc-id,
+.archive-row:active .doc-cat,
+.archive-row:active .doc-date { color: #CFCFCF; }
+.archive-row:active .archive-link {
+  background: var(--accent);
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 /* reserved for future one-line annotations — NOT used in the current markup */
